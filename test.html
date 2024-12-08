@@ -1,0 +1,80 @@
+<script type="module">
+  import dom from "./dom.js";
+
+  function assert(value, message) {
+    if (!value) {
+      throw new Error(message);
+    }
+  }
+
+  async function run(...tests) {
+    let failures = 0;
+
+    for (let test of tests) {
+      try {
+        await test();
+        console.log("Test:", test.name, "OK");
+      } catch (e) {
+        console.error("Test:", test.name, "FAILED", e);
+        failures++;
+      }
+    }
+
+    document.body.append(dom("h1", {
+      style: {
+        fontFamily: "sans-serif",
+        color: failures ? "red" : "green",
+      },
+      text: failures ? `${failures} tests failed` : `All tests passed`,
+    }));
+  }
+
+  run(
+    () => {
+      const el = dom("div", {
+        ".tabIndex": 2,
+        "--color": "red",
+        data: {
+          foo: "bar",
+        },
+        style: {
+          fontWeight: "bold",
+        },
+        text: "Hello, world!",
+        onclick() {
+          this.innerHTML = "Clicked!";
+        },
+      });
+
+      assert(el.style.getPropertyValue("--color") === "red");
+      assert(el.textContent === "Hello, world!");
+      assert(el.dataset.foo === "bar");
+      assert(el.style["font-weight"] === "bold");
+      assert(el.getAttribute("tabindex", 2));
+      el.click();
+      assert(el.textContent === "Clicked!");
+    },
+    () => {
+      const html = "Hello <b>world</b>";
+      const el = dom("div", html);
+      assert(el.innerHTML === html);
+    },
+  );
+
+  {
+    const app = dom("div", document.body);
+    const input = dom("input", { type: "number" });
+
+    app.append(
+      input,
+      dom("button", {
+        text: "+1",
+        onclick: () => ++input.value,
+      }),
+      dom("button", {
+        text: "-1",
+        onclick: () => --input.value,
+      }),
+    );
+  }
+</script>
