@@ -59,6 +59,10 @@
       const el = dom("div", html);
       assert(el.innerHTML === html);
     },
+    () => {
+      const input = dom("input", { type: "number", value: null });
+      assert(input.value === "");
+    },
   );
 
   {

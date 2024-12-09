@@ -1,3 +1,5 @@
+const props = ["value"];
+
 /** Create a new DOM element */
 export function dom(tag, attrs, parent) {
   const el = document.createElement(tag);
@@ -10,8 +12,8 @@ export function dom(tag, attrs, parent) {
   }
 
   for (const [k, v] of Object.entries(attrs ?? {})) {
-    // Properties
-    if (k.startsWith(".")) {
+    // Properties (or some special attributes)
+    if (k.startsWith(".") || props.includes(k)) {
       el[k.slice(1)] = v;
       continue;
     }
