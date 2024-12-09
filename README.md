@@ -5,8 +5,21 @@ Micro frontend library to create DOM elements easily.
 - ESM and native DOM API
 - Less than 1K (minified)
 
+## Installation
+
+This library is just a single file that you can copy to your repo or load it
+from jsdelivr using an import map:
+
+```json
+{
+  "imports": {
+    "dom.js": "https://cdn.jsdelivr.net/gh/oscarotero/dom@v0.1.0/dom.js"
+  }
+}
+```
+
 ```js
-import dom from "./dom.js";
+import dom from "dom.js";
 
 // Create an element
 const button = dom("button");
@@ -47,9 +60,9 @@ const button = dom("button", {
   },
 });
 
-// Properties start with underscore
+// Properties start with dot
 const button = dom("button", {
-  _className: "my-button",
+  ".className": "my-button",
   text: "Click me",
 });
 
@@ -96,14 +109,14 @@ const app = dom("div", document.body);
 const input = dom("input", { type: "number" });
 
 app.append(
+  dom("button", {
+    text: "-1",
+    onclick: () => --input.value,
+  }),
   input,
   dom("button", {
     text: "+1",
     onclick: () => ++input.value,
-  }),
-  dom("button", {
-    text: "-1",
-    onclick: () => --input.value,
   }),
 );
 ```

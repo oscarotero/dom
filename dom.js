@@ -4,16 +4,14 @@ export function dom(tag, attrs, parent) {
 
   if (typeof attrs === "string") {
     attrs = { html: attrs };
-  }
-
-  if (attrs instanceof Node) {
+  } else if (attrs instanceof Node) {
     parent = attrs;
     attrs = {};
   }
 
   for (const [k, v] of Object.entries(attrs ?? {})) {
     // Properties
-    if (k.startsWith("_")) {
+    if (k.startsWith(".")) {
       el[k.slice(1)] = v;
       continue;
     }
@@ -75,7 +73,7 @@ export function dom(tag, attrs, parent) {
           continue;
         }
 
-        if (typeof child === "string") {
+        if (typeof child === "string" || typeof child === "number") {
           if (child.includes("<") && child.includes(">")) {
             el.append(
               ...new DOMParser().parseFromString(child, "text/html").body

@@ -66,14 +66,14 @@
     const input = dom("input", { type: "number" });
 
     app.append(
+      dom("button", {
+        text: "-1",
+        onclick: () => --input.value,
+      }),
       input,
       dom("button", {
         text: "+1",
         onclick: () => ++input.value,
-      }),
-      dom("button", {
-        text: "-1",
-        onclick: () => --input.value,
       }),
     );
   }
