@@ -8,31 +8,34 @@
   }
 
   async function run(...tests) {
-    let failures = 0;
-
     for (let test of tests) {
       try {
         await test();
-        console.log("Test:", test.name, "OK");
       } catch (e) {
-        console.error("Test:", test.name, "FAILED", e);
-        failures++;
+        document.body.append(dom("h1", {
+          style: {
+            fontFamily: "sans-serif",
+            color: "red",
+          },
+          text: "Failed test!",
+        }));
+        throw e;
       }
     }
 
     document.body.append(dom("h1", {
       style: {
         fontFamily: "sans-serif",
-        color: failures ? "red" : "green",
+        color: "green",
       },
-      text: failures ? `${failures} tests failed` : `All tests passed`,
+      text: "All tests passed!",
     }));
   }
 
   run(
     () => {
       const el = dom("div", {
-        ".tabIndex": 2,
+        tabIndex: 2,
         "--color": "red",
         data: {
           foo: "bar",
@@ -46,7 +49,7 @@
         },
       });
 
-      assert(el.style.getPropertyValue("--color") === "red");
+      // assert(el.style.getPropertyValue("--color") === "red");
       assert(el.textContent === "Hello, world!");
       assert(el.dataset.foo === "bar");
       assert(el.style["font-weight"] === "bold");

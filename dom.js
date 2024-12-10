@@ -1,3 +1,5 @@
+const parser = new DOMParser();
+
 /** Create a new DOM element */
 export function dom(tag, attrs, parent) {
   const el = document.createElement(tag);
@@ -9,70 +11,70 @@ export function dom(tag, attrs, parent) {
     attrs = {};
   }
 
-  for (const [k, v] of Object.entries(attrs ?? {})) {
-    // Properties
-    if (k.startsWith(".")) {
-      el[k.slice(1)] = v;
+  for (const [key, value] of Object.entries(attrs ?? {})) {
+    // Value special case
+    if (key === "value") {
+      el[key] = value ?? null;
       continue;
     }
 
-    // Value special case
-    if (k === "value") {
-      el[k] = v ?? null;
+    // Properties
+    if (key.startsWith(".")) {
+      el[key.slice(1)] = value;
       continue;
     }
 
     // Event listeners
-    if (k.startsWith("on")) {
-      el.addEventListener(k.slice(2), v);
+    if (key.startsWith("on")) {
+      el.addEventListener(key.slice(2), value);
       continue;
     }
 
     // data-* attributes
-    if (k === "data") {
-      for (const [name, value] of Object.entries(v)) {
-        el.dataset[name] = value;
+    if (key === "data") {
+      for (const [name, v] of Object.entries(value)) {
+        el.dataset[name] = v;
       }
       continue;
     }
 
     // style attribute
-    if (k === "style") {
-      if (typeof v === "string") {
-        el.setAttribute("style", v);
+    if (key === "style") {
+      if (typeof value === "string") {
+        el.setAttribute("style", value);
         continue;
       }
 
-      for (const [name, value] of Object.entries(v)) {
+      for (const [name, v] of Object.entries(value)) {
         if (name.startsWith("--")) {
-          el.style.setProperty(name, value);
+          el.style.setProperty(name, v);
         } else {
-          el.style[name] = value;
+          el.style[name] = v;
         }
       }
       continue;
     }
 
     // Custom properties
-    if (k.startsWith("--")) {
-      el.style.setProperty(k, v);
+    if (key.startsWith("--")) {
+      el.style.setProperty(key, value);
       continue;
     }
 
     // Text content
-    if (k === "text") {
-      el.textContent = v;
+    if (key === "text") {
+      el.textContent = value;
       continue;
     }
 
     // HTML content
-    if (k === "html") {
-      if (typeof v === "string") {
-        el.innerHTML = v;
+    if (key === "html") {
+      if (typeof value === "string") {
+        el.innerHTML = value;
         continue;
       }
 
-      const children = Array.isArray(v) ? v : [v];
+      const children = Array.isArray(value) ? value : [value];
 
       for (const child of children) {
         if (child === null || child === undefined) {
@@ -82,7 +84,7 @@ export function dom(tag, attrs, parent) {
         if (typeof child === "string" || typeof child === "number") {
           if (child.includes("<") && child.includes(">")) {
             el.append(
-              ...new DOMParser().parseFromString(child, "text/html").body
+              ...parser.parseFromString(child, "text/html").body
                 .childNodes,
             );
             continue;
@@ -96,8 +98,14 @@ export function dom(tag, attrs, parent) {
       continue;
     }
 
-    if (v !== undefined) {
-      el.setAttribute(k, v);
+    if (value !== undefined) {
+      // If it's a property
+      if (key in el) {
+        el[key] = value;
+        continue;
+      }
+
+      el.setAttribute(key, value);
     }
   }
 
