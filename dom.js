@@ -1,4 +1,4 @@
-const props = ["value"];
+const props = new Set(["value"]);
 
 /** Create a new DOM element */
 export function dom(tag, attrs, parent) {
@@ -13,8 +13,12 @@ export function dom(tag, attrs, parent) {
 
   for (const [k, v] of Object.entries(attrs ?? {})) {
     // Properties (or some special attributes)
-    if (k.startsWith(".") || props.includes(k)) {
+    if (k.startsWith(".")) {
       el[k.slice(1)] = v;
+      continue;
+    }
+    if (props.has(k)) {
+      el[k] = v;
       continue;
     }
 
@@ -92,7 +96,9 @@ export function dom(tag, attrs, parent) {
       continue;
     }
 
-    if (v !== undefined) el.setAttribute(k, v);
+    if (v !== undefined) {
+      el.setAttribute(k, v);
+    }
   }
 
   if (parent) parent.append(el);
