@@ -1,5 +1,3 @@
-const props = new Set(["value"]);
-
 /** Create a new DOM element */
 export function dom(tag, attrs, parent) {
   const el = document.createElement(tag);
@@ -12,13 +10,15 @@ export function dom(tag, attrs, parent) {
   }
 
   for (const [k, v] of Object.entries(attrs ?? {})) {
-    // Properties (or some special attributes)
+    // Properties
     if (k.startsWith(".")) {
       el[k.slice(1)] = v;
       continue;
     }
-    if (props.has(k)) {
-      el[k] = v;
+
+    // Value special case
+    if (k === "value") {
+      el[k] = v ?? null;
       continue;
     }
 

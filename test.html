@@ -60,7 +60,7 @@
       assert(el.innerHTML === html);
     },
     () => {
-      const input = dom("input", { type: "number", value: null });
+      const input = dom("input", { type: "text", value: undefined });
       assert(input.value === "");
     },
   );
