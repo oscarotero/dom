@@ -21,39 +21,39 @@ from jsdelivr using an import map:
 ```js
 import dom from "dom.js";
 
-// Create an element
-const button = dom("button");
+// <button></button>
+dom("button");
 
-// Element with content
-const button = dom("button", "Click me");
+// <button>Click me</button>
+dom("button", "Click me");
 
-// With attributes and text content
-const button = dom("button", {
-  class: "my-button",
+// <button type="button">Click me</button>
+dom("button", {
+  type: "button",
   text: "Click me",
 });
 
-// With attributes and HTML content
-const button = dom("button", {
-  class: "my-button",
+// <button type="button"><strong>Click me</strong></button>
+dom("button", {
+  type: "button",
   html: "<strong>Click me</strong>",
 });
 
-// With attributes and DOM children
-const button = dom("button", {
-  class: "my-button",
+// <button type="button"><strong>Click me</strong></button>
+dom("button", {
+  type: "button",
   html: dom("strong", "Click me!"),
 });
 
-// Array of children
-const button = dom("button", {
+// <button type="button">Click <strong>me</strong></button>
+dom("button", {
   type: "button",
-  html: ["Click", dom("strong", "me!")],
+  html: ["Click", " ", dom("strong", "me!")],
 });
 
 // Add event listeners
-const button = dom("button", {
-  class: "my-button",
+dom("button", {
+  type: "button",
   text: "Click me",
   onclick() {
     alert("You clicked me!");
@@ -61,13 +61,13 @@ const button = dom("button", {
 });
 
 // Properties start with dot
-const button = dom("button", {
+dom("button", {
   ".className": "my-button",
   text: "Click me",
 });
 
-// data-* attributes
-const button = dom("button", {
+// <button data-foo="bar">Click me</button>
+dom("button", {
   text: "Click me",
   data: {
     foo: "bar",
@@ -75,13 +75,13 @@ const button = dom("button", {
 });
 
 // CSS style can be a string...
-const button = dom("button", {
+dom("button", {
   text: "Click me",
   style: "--color: red, color: var(--red)",
 });
 
 // ...or an object
-const button = dom("button", {
+dom("button", {
   text: "Click me",
   style: {
     "--color": "red",
@@ -90,15 +90,48 @@ const button = dom("button", {
 });
 
 // CSS custom properties starts with "--"
-const button = dom("button", {
+dom("button", {
   text: "Click me",
   "--color": "red",
+});
+
+// CSS classes can be a string...
+dom("button", {
+  text: "Click me",
+  class: "my-button is-primary",
+});
+
+// ...array...
+dom("button", {
+  text: "Click me",
+  class: ["my-button", "is-primary"],
+});
+
+// ...object...
+dom("button", {
+  text: "Click me",
+  class: {
+    "my-button": true,
+    "is-primary": true,
+  },
+});
+
+// ...and everything mixed
+dom("button", {
+  text: "Click me",
+  class: [
+    "my-button",
+    { "is-primary": true },
+  ],
 });
 
 // Append the element to body
 dom("button", "Click me", document.body);
 
-// Append empty elements
+// This is the same as
+document.body.append(dom("button", "Click me"));
+
+// The content/attributes argument is optional
 dom("div", document.body);
 ```
 

@@ -40,6 +40,8 @@
         data: {
           foo: "bar",
         },
+        class: ["foo", { "bar": false }],
+        className: "fuu",
         style: {
           fontWeight: "bold",
         },
@@ -49,11 +51,14 @@
         },
       });
 
-      // assert(el.style.getPropertyValue("--color") === "red");
+      assert(el.style.getPropertyValue("--color") === "red");
       assert(el.textContent === "Hello, world!");
       assert(el.dataset.foo === "bar");
       assert(el.style["font-weight"] === "bold");
       assert(el.getAttribute("tabindex", 2));
+      assert(el.classList.contains("foo"));
+      assert(el.classList.contains("fuu"));
+      assert(!el.classList.contains("bar"));
       el.click();
       assert(el.textContent === "Clicked!");
     },

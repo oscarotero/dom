@@ -18,6 +18,21 @@ export function dom(tag, attrs, parent) {
       continue;
     }
 
+    // Class names
+    if (key === "class" || key === "className") {
+      const classes = Array.isArray(value) ? value : [value];
+      for (const name of classes) {
+        if (typeof name === "string") {
+          el.classList.add(...name.split(" "));
+          continue;
+        }
+        for (const [n, v] of Object.entries(name)) {
+          if (v) el.classList.add(...n.split(" "));
+        }
+      }
+      continue;
+    }
+
     // Properties
     if (key.startsWith(".")) {
       el[key.slice(1)] = value;
