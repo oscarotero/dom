@@ -87,6 +87,17 @@
         text: "+1",
         onclick: () => ++input.value,
       }),
+      dom("button", {
+        text: "alert",
+        class: [
+          "foo",
+          false,
+          undefined,
+          true,
+          null,
+        ],
+        onclick: 'alert("it works!")',
+      }),
     );
   }
 </script>

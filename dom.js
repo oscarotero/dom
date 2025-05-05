@@ -22,12 +22,17 @@ export function dom(tag, attrs, parent) {
     if (key === "class" || key === "className") {
       const classes = Array.isArray(value) ? value : [value];
       for (const name of classes) {
+        if (!name) continue;
         if (typeof name === "string") {
           el.classList.add(...name.split(" "));
           continue;
         }
-        for (const [n, v] of Object.entries(name)) {
-          if (v) el.classList.add(...n.split(" "));
+        if (typeof name === "object" ) {
+          // If it's an object, we assume it's a map of class names
+          // to boolean values
+          for (const [n, v] of Object.entries(name)) {
+            if (v) el.classList.add(...n.split(" "));
+          }
         }
       }
       continue;
@@ -41,6 +46,10 @@ export function dom(tag, attrs, parent) {
 
     // Event listeners
     if (key.startsWith("on")) {
+      if (typeof value === "string") {
+        el.setAttribute(key, value);
+        continue;
+      }
       el.addEventListener(key.slice(2), value);
       continue;
     }
