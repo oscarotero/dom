@@ -4,7 +4,7 @@ const parser = new DOMParser();
 export function dom(tag, attrs, parent) {
   const el = document.createElement(tag);
 
-  if (typeof attrs === "string") {
+  if (typeof attrs === "string" || Array.isArray(attrs)) {
     attrs = { html: attrs };
   } else if (attrs instanceof Node) {
     parent = attrs;

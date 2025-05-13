@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.7] - 2025-05-13
+### Fixed
+- Allow arrays as html property in `dom(el, html)`.
+
 ## [0.1.6] - 2025-05-05
 ### Added
 - Allow string values for events (like `onclick="alert('clicked')"`).
@@ -37,6 +41,7 @@ project adheres to [Semantic Versioning](https://semver.org/).
 ## [0.1.0] - 2024-12-09
 First version
 
+[0.1.7]: https://github.com/oscarotero/dom/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/oscarotero/dom/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/oscarotero/dom/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/oscarotero/dom/compare/v0.1.3...v0.1.4

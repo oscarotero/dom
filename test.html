@@ -71,6 +71,13 @@
       const input = dom("input", { type: "text", value: undefined });
       assert(input.value === "");
     },
+    () => {
+      const el = dom("div", ["hello", "<strong>world</strong>", "<em>foo</em>"]);
+
+      assert(el.textContent === "helloworldfoo");
+      assert(el.innerHTML === "hello<strong>world</strong><em>foo</em>");
+      assert(el.childNodes.length === 3);
+    },
   );
 
   {
