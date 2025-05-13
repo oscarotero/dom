@@ -18,6 +18,10 @@ export function dom(tag, attrs, parent) {
       continue;
     }
 
+    if (value === undefined) {
+      continue;
+    }
+
     // Class names
     if (key === "class" || key === "className") {
       const classes = Array.isArray(value) ? value : [value];
@@ -27,7 +31,7 @@ export function dom(tag, attrs, parent) {
           el.classList.add(...name.split(" "));
           continue;
         }
-        if (typeof name === "object" ) {
+        if (typeof name === "object") {
           // If it's an object, we assume it's a map of class names
           // to boolean values
           for (const [n, v] of Object.entries(name)) {
@@ -122,15 +126,13 @@ export function dom(tag, attrs, parent) {
       continue;
     }
 
-    if (value !== undefined) {
-      // If it's a property
-      if (key in el) {
-        el[key] = value;
-        continue;
-      }
-
-      el.setAttribute(key, value);
+    // If it's a property
+    if (key in el) {
+      el[key] = value;
+      continue;
     }
+
+    el.setAttribute(key, value);
   }
 
   if (parent) parent.append(el);

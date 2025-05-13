@@ -37,6 +37,7 @@
       const el = dom("div", {
         tabIndex: 2,
         "--color": "red",
+        "--color-2": undefined,
         data: {
           foo: "bar",
         },
@@ -52,6 +53,7 @@
       });
 
       assert(el.style.getPropertyValue("--color") === "red");
+      assert(el.style.getPropertyValue("--color-2") === "");
       assert(el.textContent === "Hello, world!");
       assert(el.dataset.foo === "bar");
       assert(el.style["font-weight"] === "bold");
@@ -72,7 +74,11 @@
       assert(input.value === "");
     },
     () => {
-      const el = dom("div", ["hello", "<strong>world</strong>", "<em>foo</em>"]);
+      const el = dom("div", [
+        "hello",
+        "<strong>world</strong>",
+        "<em>foo</em>",
+      ]);
 
       assert(el.textContent === "helloworldfoo");
       assert(el.innerHTML === "hello<strong>world</strong><em>foo</em>");
