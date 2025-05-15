@@ -84,6 +84,26 @@
       assert(el.innerHTML === "hello<strong>world</strong><em>foo</em>");
       assert(el.childNodes.length === 3);
     },
+    () => {
+      const el = dom("svg", {
+        width: 438,
+        height: 105,
+        fill: "none",
+        viewBox: "0 0 438 105",
+        html: [
+          dom("rect", {
+            x: 20,
+            y: 15,
+            width: 417,
+            height: 42,
+            rx: 3,
+            stroke: "black",
+            "stroke-width": 2,
+          }),
+        ],
+      });
+      document.body.appendChild(el);
+    },
   );
 
   {

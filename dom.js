@@ -1,8 +1,74 @@
 const parser = new DOMParser();
 
+const svgElements = new Set([
+  "animate",
+  "animateMotion",
+  "animateTransform",
+  "circle",
+  "clipPath",
+  "defs",
+  "desc",
+  "discard",
+  "ellipse",
+  "feBlend",
+  "feColorMatrix",
+  "feComponentTransfer",
+  "feComposite",
+  "feConvolveMatrix",
+  "feDiffuseLighting",
+  "feDisplacementMap",
+  "feDistantLight",
+  "feDropShadow",
+  "feFlood",
+  "feFuncA",
+  "feFuncB",
+  "feFuncG",
+  "feFuncR",
+  "feGaussianBlur",
+  "feImage",
+  "feMerge",
+  "feMergeNode",
+  "feMorphology",
+  "feOffset",
+  "fePointLight",
+  "feSpecularLighting",
+  "feSpotLight",
+  "feTile",
+  "feTurbulence",
+  "filter",
+  "foreignObject",
+  "g",
+  "image",
+  "line",
+  "linearGradient",
+  "marker",
+  "mask",
+  "metadata",
+  "mpath",
+  "path",
+  "pattern",
+  "polygon",
+  "polyline",
+  "radialGradient",
+  "rect",
+  "set",
+  "stop",
+  "svg",
+  "switch",
+  "symbol",
+  "text",
+  "textPath",
+  "tspan",
+  "use",
+  "view",
+]);
+
 /** Create a new DOM element */
 export function dom(tag, attrs, parent) {
-  const el = document.createElement(tag);
+  const isSvg = svgElements.has(tag);
+  const el = isSvg
+    ? document.createElementNS("http://www.w3.org/2000/svg", tag)
+    : document.createElement(tag);
 
   if (typeof attrs === "string" || Array.isArray(attrs)) {
     attrs = { html: attrs };
@@ -127,7 +193,7 @@ export function dom(tag, attrs, parent) {
     }
 
     // If it's a property
-    if (key in el) {
+    if (!isSvg && key in el) {
       el[key] = value;
       continue;
     }
