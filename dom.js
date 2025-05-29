@@ -68,7 +68,9 @@ export function dom(tag, attrs, parent) {
   const isSvg = svgElements.has(tag);
   const el = isSvg
     ? document.createElementNS("http://www.w3.org/2000/svg", tag)
-    : document.createElement(tag);
+    : typeof tag === "string"
+    ? document.createElement(tag)
+    : tag;
 
   if (typeof attrs === "string" || Array.isArray(attrs)) {
     attrs = { html: attrs };
@@ -162,7 +164,7 @@ export function dom(tag, attrs, parent) {
     }
 
     // HTML content
-    if (key === "html") {
+    if (key === "html" || key === "children") {
       if (typeof value === "string") {
         el.innerHTML = value;
         continue;
