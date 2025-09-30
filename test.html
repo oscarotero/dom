@@ -85,6 +85,20 @@
       assert(el.childNodes.length === 3);
     },
     () => {
+      const el = dom("div", [
+        dom("strong", "Hello"),
+        "world",
+        "&lt;strong&gt;Hello world&lt;/strong&gt;",
+      ]);
+
+      assert(el.textContent === "Helloworld<strong>Hello world</strong>");
+      assert(
+        el.innerHTML ===
+          "<strong>Hello</strong>world&lt;strong&gt;Hello world&lt;/strong&gt;",
+      );
+      assert(el.childNodes.length === 3);
+    },
+    () => {
       const el = dom("svg", {
         width: 438,
         height: 105,

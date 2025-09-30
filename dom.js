@@ -178,14 +178,10 @@ export function dom(tag, attrs, parent) {
         }
 
         if (typeof child === "string" || typeof child === "number") {
-          if (child.includes("<") && child.includes(">")) {
-            el.append(
-              ...parser.parseFromString(child, "text/html").body
-                .childNodes,
-            );
-            continue;
-          }
-          el.append(document.createTextNode(child));
+          el.append(
+            ...parser.parseFromString(child, "text/html").body
+              .childNodes,
+          );
         } else {
           el.append(child);
         }
