@@ -1,5 +1,5 @@
 <script type="module">
-  import dom from "./dom.js";
+  import { computed, dom, effect, signal } from "./dom.js";
 
   function assert(value, message) {
     if (!value) {
@@ -118,33 +118,30 @@
       });
       document.body.appendChild(el);
     },
+    () => {
+      const className = signal();
+      const el = dom("div", {
+        class: className,
+      });
+
+      assert(el.classList.length === 0);
+      className.value = "hello";
+      assert(el.classList.length === 1);
+      assert(el.classList.contains("hello") === true);
+    },
+    () => {
+      const v = signal(1);
+      const el = dom("input", {
+        type: "number",
+        value: v,
+      });
+
+      assert(el.value === "1");
+      el.value = 3;
+      el.dispatchEvent(new Event("input"));
+      assert(v.value === "3");
+      v.value = 4;
+      assert(el.value === "4");
+    },
   );
-
-  {
-    const app = dom("div", document.body);
-    const input = dom("input", { type: "number" });
-
-    app.append(
-      dom("button", {
-        text: "-1",
-        onclick: () => --input.value,
-      }),
-      input,
-      dom("button", {
-        text: "+1",
-        onclick: () => ++input.value,
-      }),
-      dom("button", {
-        text: "alert",
-        class: [
-          "foo",
-          false,
-          undefined,
-          true,
-          null,
-        ],
-        onclick: 'alert("it works!")',
-      }),
-    );
-  }
 </script>
