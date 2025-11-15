@@ -3,7 +3,8 @@
 Micro frontend library to create DOM elements easily.
 
 - ESM and native DOM API
-- Less than 1K (minified)
+- Less than 4KB
+- Include Signals for reactive code
 
 ## Installation
 
@@ -18,8 +19,10 @@ from jsdelivr using an import map:
 }
 ```
 
+## Usage
+
 ```js
-import dom from "dom.js";
+import { dom } from "dom.js";
 
 // <button></button>
 dom("button");
@@ -150,6 +153,70 @@ app.append(
   dom("button", {
     text: "+1",
     onclick: () => ++input.value,
+  }),
+);
+```
+
+## Reactive code
+
+The library includes a minimalistic implementation of Signals:
+
+- `signal(value)`: Create a signal value
+- `computed(callback)`: Create a computed value
+- `effect(callback)`: Run code when any signal or computed value changes
+
+Example of the previous code using a reactive approach:
+
+```js
+import { dom, signal } from "dom.js";
+
+const app = dom("div", document.body);
+const value = signal(0); // Create the signal
+
+app.append(
+  dom("button", {
+    text: "-1",
+    onclick: () => --value.value,
+  }),
+  dom("input", { type: "number", value }),
+  dom("button", {
+    text: "+1",
+    onclick: () => ++value.value,
+  }),
+);
+```
+
+Signals can be used for any attribute, property or content:
+
+```js
+import { computed, dom, signal } from "./dom.js";
+
+const app = dom("div", document.body);
+
+// Create the signal
+const value = signal(0.5);
+
+// Create a computed signal
+const color = computed(() => `rgba(0, 0, 0, ${value})`);
+
+app.append(
+  dom("p", {
+    style: {
+      "font-size": "2em",
+      "color": color, // Signals can be used as attributes and properties
+    },
+    html: [
+      "The opacity value is: ",
+      value, // Signals can be used as the content, mixed with static values
+    ],
+  }),
+  dom("label", "Change color:"),
+  dom("input", {
+    type: "range",
+    step: 0.1,
+    min: 0,
+    max: 1,
+    value, // Signals used as value for inputs are updated automatically
   }),
 );
 ```
