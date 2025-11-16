@@ -59,20 +59,6 @@ class ComputedSignal extends Signal {
     computed.#subscribe || computed.#run();
   }
 
-  #run() {
-    if (this.#compute) {
-      const previously = computing;
-      computing = this;
-      this.#compute = false;
-      this.clear();
-      try {
-        Signal.set(this, this.#valueFn());
-      } finally {
-        computing = previously;
-      }
-    }
-  }
-
   constructor(valueFn, isEffect = false) {
     super(undefined);
     this.#valueFn = valueFn;
@@ -95,6 +81,20 @@ class ComputedSignal extends Signal {
     this.#run();
     return super.peek();
   }
+
+  #run() {
+    if (this.#compute) {
+      const previously = computing;
+      computing = this;
+      this.#compute = false;
+      this.clear();
+      try {
+        Signal.set(this, this.#valueFn());
+      } finally {
+        computing = previously;
+      }
+    }
+  }
 }
 
 export function computed(value) {
@@ -103,10 +103,6 @@ export function computed(value) {
 
 export function effect(callback) {
   new ComputedSignal(callback, true).value;
-}
-
-function isSignal(value) {
-  return value instanceof Signal;
 }
 
 function cleared(self) {
@@ -313,7 +309,7 @@ export function dom(tag, attrs, parent) {
 }
 
 function apply(value, callback) {
-  if (isSignal(value)) {
+  if (value instanceof Signal) {
     return effect(() => apply(value.value, callback));
   }
   callback(value);
@@ -327,7 +323,7 @@ function addChildren(el, value) {
       continue;
     }
 
-    if (isSignal(child)) {
+    if (child instanceof Signal) {
       const c = document.createComment("");
       el.append(c);
       const nodes = getNodes(child.value);
