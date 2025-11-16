@@ -143,5 +143,22 @@
       v.value = 4;
       assert(el.value === "4");
     },
+    () => {
+      const value = signal(3);
+
+      const el = dom("select", {
+        name: "foo",
+        value,
+        html: [
+          "<option>1</option>",
+          "<option>2</option>",
+          "<option>3</option>",
+        ],
+      });
+
+      assert(el.value === "3");
+      value.value = 2;
+      assert(el.value === "2");
+    },
   );
 </script>

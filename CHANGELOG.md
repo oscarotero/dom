@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/).
 - Reactive behavior using signals. Added `signal`, `computed` and `effect`
   functions.
 
+### Changed
+- `innerHTML`, `html` and `children` properties are added first.
+
 ## [0.1.10] - 2025-09-30
 ### Added
 - Alias `children` to `html`.

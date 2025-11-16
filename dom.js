@@ -195,10 +195,28 @@ export function dom(tag, attrs, parent) {
     attrs = {};
   }
 
+  // HTML content is added first because it's needed for some elements like select/options
+  if (attrs.html) {
+    setInnerHTML(el, attrs.html);
+    delete attrs.html;
+  }
+  if (attrs.innerHTML) {
+    setInnerHTML(el, attrs.innerHTML);
+    delete attrs.innerHTML;
+  }
+  if (attrs.children) {
+    setChildren(el, attrs.children);
+    delete attrs.children;
+  }
+
   for (const [key, value] of Object.entries(attrs ?? {})) {
-    // Value special case
+    // Value special case for forms
     if (key === "value") {
-      setValue(el, "value", value ?? null);
+      setValue(el, value ?? null);
+      continue;
+    }
+    if (key === "checked") {
+      setChecked(el, value ?? false);
       continue;
     }
 
@@ -252,17 +270,6 @@ export function dom(tag, attrs, parent) {
       continue;
     }
 
-    // HTML content
-    if (key === "html" || key === "children") {
-      if (typeof value === "string") {
-        setProperty(el, "innerHTML", value);
-        continue;
-      }
-
-      setChildren(el, value);
-      continue;
-    }
-
     // If it's a property
     if (!isSvg && key in el) {
       setProperty(el, key, value);
@@ -276,13 +283,21 @@ export function dom(tag, attrs, parent) {
   return el;
 }
 
-function setValue(el, key, value) {
+function setValue(el, value) {
   if (isSignal(value)) {
-    effect(() => setValue(el, key, value.value));
+    effect(() => setValue(el, value.value));
     el.addEventListener("input", () => value.value = el.value);
     return;
   }
   el.value = value;
+}
+function setChecked(el, value) {
+  if (isSignal(value)) {
+    effect(() => setChecked(el, value.value));
+    el.addEventListener("change", () => value.value = el.checked);
+    return;
+  }
+  el.checked = !!value;
 }
 
 function setProperty(el, key, value) {
@@ -358,6 +373,14 @@ function setClassNames(el, value) {
       }
     }
   }
+}
+
+function setInnerHTML(el, value) {
+  if (typeof value === "string") {
+    return setProperty(el, "innerHTML", value);
+  }
+
+  setChildren(el, value);
 }
 
 function setChildren(el, value) {
