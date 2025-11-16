@@ -196,33 +196,29 @@ export function dom(tag, attrs, parent) {
   }
 
   // HTML content is added first because it's needed for some elements like select/options
-  if (attrs.html) {
-    setInnerHTML(el, attrs.html);
-    delete attrs.html;
-  }
   if (attrs.innerHTML) {
-    setInnerHTML(el, attrs.innerHTML);
+    apply(attrs.innerHTML, (value) => el.innerHTML = value);
     delete attrs.innerHTML;
   }
+  if (attrs.html) {
+    addChildren(el, attrs.html);
+    delete attrs.html;
+  }
   if (attrs.children) {
-    setChildren(el, attrs.children);
+    addChildren(el, attrs.children);
     delete attrs.children;
   }
 
   for (const [key, value] of Object.entries(attrs ?? {})) {
-    // Value special case for forms
+    // Value special case
     if (key === "value") {
-      setValue(el, value ?? null);
-      continue;
-    }
-    if (key === "checked") {
-      setChecked(el, value ?? false);
+      apply(value, (v) => el.value = v ?? null);
       continue;
     }
 
     // Properties
     if (key.startsWith(".")) {
-      setProperty(el, key.slice(1), value);
+      apply(value, (v) => el[key.slice(1)] = v);
       continue;
     }
 
@@ -232,7 +228,22 @@ export function dom(tag, attrs, parent) {
 
     // Class names
     if (key === "class" || key === "className") {
-      setClassNames(el, value);
+      apply(value, (v) => {
+        const classes = Array.isArray(v) ? v : [v];
+        for (const name of classes) {
+          if (!name) continue;
+          if (typeof name === "string") {
+            el.classList.add(...name.split(" "));
+            continue;
+          }
+          if (typeof name === "object") {
+            // If it's an object, assume it's a map of class names to boolean
+            for (const [n, v] of Object.entries(name)) {
+              if (v) el.classList.add(...n.split(" "));
+            }
+          }
+        }
+      });
       continue;
     }
 
@@ -248,142 +259,67 @@ export function dom(tag, attrs, parent) {
 
     // data-* attributes
     if (key === "data") {
-      setDataAttribute(el, value);
+      apply(value, (v) => {
+        for (const [name, vv] of Object.entries(v)) {
+          apply(vv, (vvv) => el.dataset[name] = vvv);
+        }
+      });
       continue;
     }
 
     // style attribute
     if (key === "style") {
-      setStyles(el, value);
+      apply(value, (v) => {
+        if (typeof v === "string") {
+          el.style = v;
+          return;
+        }
+
+        for (const [name, v] of Object.entries(value)) {
+          if (name.startsWith("--")) {
+            apply(v, (vv) => el.style.setProperty(name, vv));
+            continue;
+          }
+
+          apply(v, (vv) => el.style[name] = vv);
+        }
+      });
       continue;
     }
 
     // Custom properties
     if (key.startsWith("--")) {
-      setStyleProperty(el, key, value);
+      apply(value, (v) => el.style.setProperty(key, v));
       continue;
     }
 
     // Text content
     if (key === "text") {
-      setProperty(el, "textContent", value);
+      apply(value, (v) => el.textContent = v);
       continue;
     }
 
     // If it's a property
     if (!isSvg && key in el) {
-      setProperty(el, key, value);
+      apply(value, (v) => el[key] = v);
       continue;
     }
 
-    setAttribute(el, key, value);
+    apply(value, (v) => el.setAttribute(key, v));
   }
 
   if (parent) parent.append(el);
   return el;
 }
 
-function setValue(el, value) {
+function apply(value, callback) {
   if (isSignal(value)) {
-    effect(() => setValue(el, value.value));
-    el.addEventListener("input", () => value.value = el.value);
-    return;
+    return effect(() => apply(value.value, callback));
   }
-  el.value = value;
-}
-function setChecked(el, value) {
-  if (isSignal(value)) {
-    effect(() => setChecked(el, value.value));
-    el.addEventListener("change", () => value.value = el.checked);
-    return;
-  }
-  el.checked = !!value;
+  callback(value);
 }
 
-function setProperty(el, key, value) {
-  if (isSignal(value)) {
-    return effect(() => setProperty(el, key, value.value));
-  }
-  el[key] = value;
-}
-
-function setSubProperty(el, key, subkey, value) {
-  if (isSignal(value)) {
-    return effect(() => setSubProperty(el, key, subkey, value.value));
-  }
-  el[key][subkey] = value;
-}
-
-function setAttribute(el, key, value) {
-  if (isSignal(value)) {
-    return effect(() => setAttribute(el, key, value.value));
-  }
-  el.setAttribute(key, value);
-}
-
-function setDataAttribute(el, value) {
-  if (isSignal(value)) {
-    return effect(() => setDataAttribute(el, value.value));
-  }
-  for (const [name, v] of Object.entries(value)) {
-    setSubProperty(el, "dataset", name, v);
-  }
-}
-
-function setStyles(el, value) {
-  if (isSignal(value)) {
-    return effect(() => setStyles(el, value.value));
-  }
-
-  if (typeof value === "string") {
-    return setAttribute(el, "style", value);
-  }
-
-  for (const [name, v] of Object.entries(value)) {
-    if (name.startsWith("--")) {
-      setStyleProperty(el, name, v);
-      continue;
-    }
-    setSubProperty(el, "style", name, v);
-  }
-}
-
-function setStyleProperty(el, key, value) {
-  if (isSignal(value)) {
-    return effect(() => setStyleProperty(el, key, value.value));
-  }
-  el.style.setProperty(key, value);
-}
-
-function setClassNames(el, value) {
-  if (isSignal(value)) {
-    return effect(() => setClassNames(el, value.value));
-  }
-  const classes = Array.isArray(value) ? value : [value];
-  for (const name of classes) {
-    if (!name) continue;
-    if (typeof name === "string") {
-      el.classList.add(...name.split(" "));
-      continue;
-    }
-    if (typeof name === "object") {
-      // If it's an object, assume it's a map of class names to boolean
-      for (const [n, v] of Object.entries(name)) {
-        if (v) el.classList.add(...n.split(" "));
-      }
-    }
-  }
-}
-
-function setInnerHTML(el, value) {
-  if (typeof value === "string") {
-    return setProperty(el, "innerHTML", value);
-  }
-
-  setChildren(el, value);
-}
-
-function setChildren(el, value) {
+function addChildren(el, value) {
   const children = Array.isArray(value) ? value : [value];
 
   for (const child of children) {
@@ -392,7 +328,7 @@ function setChildren(el, value) {
     }
 
     if (isSignal(child)) {
-      const c = document.createComment("signal");
+      const c = document.createComment("");
       el.append(c);
       const nodes = getNodes(child.value);
       c.nodes = nodes;

@@ -134,6 +134,7 @@
       const el = dom("input", {
         type: "number",
         value: v,
+        oninput: (e) => v.value = e.target.value,
       });
 
       assert(el.value === "1");

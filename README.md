@@ -216,7 +216,8 @@ app.append(
     step: 0.1,
     min: 0,
     max: 1,
-    value, // Signals used as value for inputs are updated automatically
+    value, // Signal used as value
+    oninput: (e) => value.value = e.target.value // Update the signal on input
   }),
 );
 ```
