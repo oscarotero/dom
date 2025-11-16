@@ -14,7 +14,7 @@ from jsdelivr using an import map:
 ```json
 {
   "imports": {
-    "dom.js": "https://cdn.jsdelivr.net/gh/oscarotero/dom@v0.1.0/dom.js"
+    "dom.js": "https://cdn.jsdelivr.net/gh/oscarotero/dom/dom.js"
   }
 }
 ```
