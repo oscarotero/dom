@@ -5,6 +5,7 @@ Micro frontend library to create DOM elements easily.
 - ESM and native DOM API
 - Less than 4KB
 - Include Signals for reactive code
+- Can be used as a JSX library
 
 ## Installation
 
@@ -217,7 +218,77 @@ app.append(
     min: 0,
     max: 1,
     value, // Signal used as value
-    oninput: (e) => value.value = e.target.value // Update the signal on input
+    oninput: (e) => value.value = e.target.value, // Update the signal on input
   }),
 );
+```
+
+## JSX
+
+The `jsx-runtime.js` file allows to use DOM as a JSX library. This is an example
+using Deno:
+
+```json
+{
+  "imports": {
+    "dom": "./dom/dom.js",
+    "dom/jsx-runtime": "./dom/jsx-runtime.js"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "dom"
+  }
+}
+```
+
+Create an HTML file that imports the main JSX code:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <script type="module" src="./main.jsx"></script>
+  </head>
+  <body></body>
+</html>
+```
+
+Add the following code to the main.jsx file:
+
+```jsx
+import { signal } from "dom";
+
+function App() {
+  const counter = signal(10);
+
+  // Create an Input component
+  const Input = () => (
+    <input
+      value={counter}
+      oninput={(ev) => counter.value = ev.target.value}
+    />
+  );
+
+  // The component returns a real HTML element that you can modify
+  const input = <Input />;
+  input.classList.add("mola");
+
+  return (
+    <>
+      {input}
+      <button type="button" onclick={() => counter.value++}>Increment</button>
+      <button type="button" onclick={() => counter.value--}>Decrement</button>
+    </>
+  );
+}
+
+// Add the app to the body
+document.body.appendChild(<App />);
+```
+
+Run the `bundle` command of Deno to compile the code and watch changes:
+
+```
+deno bundle index.html --watch --outdir=out
 ```
