@@ -231,8 +231,8 @@ using Deno:
 ```json
 {
   "imports": {
-    "dom": "./dom/dom.js",
-    "dom/jsx-runtime": "./dom/jsx-runtime.js"
+    "dom": "https://cdn.jsdelivr.net/gh/oscarotero/dom/dom.js",
+    "dom/jsx-runtime": "https://cdn.jsdelivr.net/gh/oscarotero/dom/jsx-runtime.js"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
